@@ -5,6 +5,10 @@ zopfli>=0.2.3
 etcpak>=0.9.8
 PyYAML>=6.0
 
+# Offline texture cutters (tools/cut_minigame_*.py) and tests/test_cov_minigame_cutters.py
+opencv-python-headless>=4.8.0
+scipy>=1.10.0
+
 # Optional: OpenAI MT for patch_textresource.py translate
 # openai>=1.0.0
 

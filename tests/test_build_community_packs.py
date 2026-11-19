@@ -177,7 +177,7 @@ def test_shipped_pack_files_match_a_fresh_build(tmp_path):
     (dbin / "script").mkdir(parents=True)
     for stem in cp.community_english(cp.DBIN):
         (dbin / "script" / f"{stem}.dbin2").write_bytes((cp.DBIN / "script" / f"{stem}.dbin2").read_bytes())
-    done, _skipped = cp.build(dbin, cp.VANILLA_BIN, write=True)
+    done, _skipped = cp.build(dbin, cp.VANILLA_BIN, write=True, pack_only=cp.load_pack_only())
     assert done > 0
     for path in sorted((dbin / "NLP_01").glob("*.dbin2")) + sorted((dbin / "NLP_02").glob("*.dbin2")):
         assert (cp.DBIN / path.parent.name / path.name).read_bytes() == path.read_bytes(), path
@@ -199,7 +199,143 @@ def test_shipped_mirrors_match_a_fresh_build(tmp_path):
         for path in (cp.CONTRIB / pack).glob("*.dbin2"):
             if f"{pack}/{path.stem}" not in listed:
                 shutil.copy(path, contrib / pack / path.name)
+    shutil.copy(cp.PACK_ONLY_FILE, contrib / cp.PACK_ONLY_FILE.name)
     cp.build_contrib(contrib, cp.VANILLA_BIN, write=True)
     assert json.loads((contrib / "pack_mirrors.json").read_text(encoding="utf-8")) == listed
     for key in listed:
         assert (contrib / f"{key}.dbin2").read_bytes() == (cp.CONTRIB / f"{key}.dbin2").read_bytes(), key
+
+
+def test_realign_takes_registry_lines_and_checks_their_markers():
+    js = names.parse_dbin2(script([["一", "二"]]))[2]
+    en = names.parse_dbin2(script([["One", "Two"]]))[2]
+    jp = names.parse_dbin2(script([["一", "別の行", "二"]]))[2]
+    assert cp.realign(js, jp, en, {"別の行": "Extra"}) == ([["One", "Extra", "Two"]], "")
+    assert cp.realign(js, jp, en, {}) == (None, "entry 0: no English for pack line '別の行'")
+    # a nickname marker must survive, in either spelling
+    jp = names.parse_dbin2(script([["一", "▲高嶺＊＊▲！", "二"]]))[2]
+    assert cp.realign(js, jp, en, {"▲高嶺＊＊▲！": "▲Takane＊＊▲！"})[1] == ""
+    why = cp.realign(js, jp, en, {"▲高嶺＊＊▲！": "Takane！"})[1]
+    assert why.startswith("entry 0: markers of")
+
+
+def test_realign_pairs_entries_when_the_pack_drops_or_adds_one():
+    js = names.parse_dbin2(script([["一"], ["二"], [], ["四"]]))[2]
+    en = names.parse_dbin2(script([["One"], ["Two"], [], ["Four"]]))[2]
+    jp = names.parse_dbin2(script([["一"], [], ["四"]]))[2]  # 二 and one empty entry dropped
+    assert cp.realign(js, jp, en)[0] is None  # refused unless asked
+    assert cp.realign(js, jp, en, {}, align_entries=True)[0] == [["One"], [], ["Four"]]
+    jp = names.parse_dbin2(script([["一"], ["新"], ["二"], [], ["四"]]))[2]  # an entry only the pack has
+    assert cp.realign(js, jp, en, {"新": "New"}, align_entries=True)[0] == [["One"], ["New"], ["Two"], [], ["Four"]]
+
+
+def test_map_pack_reads_the_stems_own_registry_entry():
+    pack = script([["こんにちは。元気？", "追加", "うん"], ["またね"]])
+    assert cp.map_pack(script(EN), script(JP), pack)[0] is None
+    reg = {"a001": {"lines": {"追加": "Extra"}}}
+    assert cp.map_pack(script(EN), script(JP), pack, "a001", reg)[1] == ""
+    assert cp.map_pack(script(EN), script(JP), pack, "a002", reg)[0] is None  # another stem's lines
+
+
+def test_build_rebuild_maps_registry_stems_and_leaves_matching_files(tmp_path):
+    dbin, contrib, vanilla = tmp_path / "dbin", tmp_path / "contrib", tmp_path / "vanilla"
+    for d in (dbin / "script", dbin / "NLP_01", contrib / "script", vanilla / "script", vanilla / "NLP_01"):
+        d.mkdir(parents=True)
+    pack_jp = script([["こんにちは。元気？", "追加", "うん"], ["またね"]], key=5)
+    for stem in ("t001", "t002", "t003"):
+        (dbin / "script" / f"{stem}.dbin2").write_bytes(script(EN))
+        (vanilla / "script" / f"{stem}.dbin2").write_bytes(script(JP))
+        (vanilla / "NLP_01" / f"{stem}.dbin2").write_bytes(pack_jp)
+    (contrib / "script" / "t003.dbin2").write_bytes(script(EN))  # has a contributor file: build_contrib's job
+    reg = {stem: {"lines": {"追加": "Extra"}} for stem in ("t001", "t002", "t003", "t004")}
+    done, skipped = cp.build_rebuild(dbin, contrib, vanilla, write=True, pack_only=reg)
+    assert (done, skipped) == (2, [])
+    key, _u, entries = names.parse_dbin2((dbin / "NLP_01" / "t001.dbin2").read_bytes())
+    assert key == 5 and entries[0].sdl2.dialogs == ["Hello.\nHow are you?", "Extra", "Yeah"]
+    assert not (dbin / "NLP_01" / "t003.dbin2").exists()
+    # same dialogs, different bytes: a matching file is not rewritten
+    other = names.build_dbin2(9, 9, names.parse_dbin2((dbin / "NLP_01" / "t002.dbin2").read_bytes())[2])
+    (dbin / "NLP_01" / "t002.dbin2").write_bytes(other)
+    cp.build_rebuild(dbin, contrib, vanilla, write=True, pack_only=reg)
+    assert (dbin / "NLP_01" / "t002.dbin2").read_bytes() == other
+
+
+@pytest.mark.local_data
+def test_every_registry_stem_maps_onto_both_packs():
+    """No stem in pack_only_lines.json is left with a pack line it cannot translate."""
+    if not (cp.VANILLA_BIN / "script").is_dir():
+        pytest.skip("no vanilla script tree")
+    reg = cp.load_pack_only()
+    assert reg
+    _n, skipped = cp.build_contrib(cp.CONTRIB, cp.VANILLA_BIN, write=False)
+    _n2, skipped2 = cp.build_rebuild(cp.DBIN, cp.CONTRIB, cp.VANILLA_BIN, write=False, pack_only=reg)
+    assert [x for x in skipped + skipped2 if x.split(": ")[0].split("/")[1] in reg] == []
+    for stem, cfg in reg.items():  # every translation keeps the Japanese line's markers
+        for jp, en in cfg["lines"].items():
+            assert cp._tokens(en) == cp._tokens(jp), (stem, jp)
+
+
+@pytest.mark.local_data
+def test_every_shipped_nlp_line_traces_to_reviewed_english():
+    """The NLP_01 / NLP_02 file a build ships (contributor, else rebuild_dbin2) has, for each of its
+    Japanese lines, either the reviewed script-pack English for that line or its registry translation.
+    This keeps an older-draft or extra pack line from showing another line's English."""
+    import difflib
+    import re
+
+    vanilla = cp.VANILLA_BIN
+    if not (vanilla / "script").is_dir():
+        pytest.skip("no vanilla script tree")
+    reg = cp.load_pack_only()
+
+    def canon(text: str) -> str:
+        for form, short in cp._NAME_FORMS:
+            text = text.replace(form, short)
+        return re.sub(r"\s+", "", text)
+
+    def source(pack: str, stem: str) -> Path | None:
+        for root in (cp.CONTRIB / pack, cp.DBIN / pack):
+            if (root / f"{stem}.dbin2").is_file():
+                return root / f"{stem}.dbin2"
+        return None
+
+    bad = []
+    for jp_script_path in sorted((vanilla / "script").glob("*.dbin2")):
+        stem = jp_script_path.stem
+        en_script = source("script", stem)
+        if en_script is None:
+            continue
+        lines = {**cp.PACK_ONLY_LINES, **reg.get(stem, {}).get("lines", {})}
+        want = {canon(v): k for k, v in lines.items()}
+        js = names.parse_dbin2(jp_script_path.read_bytes())[2]
+        es = names.parse_dbin2(en_script.read_bytes())[2]
+        for pack in cp.PACKS:
+            jp_pack, en_pack = vanilla / pack / f"{stem}.dbin2", source(pack, stem)
+            if not jp_pack.is_file() or en_pack is None:
+                continue
+            jp = names.parse_dbin2(jp_pack.read_bytes())[2]
+            ep = names.parse_dbin2(en_pack.read_bytes())[2]
+            if len(ep) != len(jp):
+                bad.append(f"{pack}/{stem}: {len(ep)} English entries for {len(jp)} Japanese")
+                continue
+            pairs = [(i, i) for i in range(len(jp))] if len(jp) == len(js) else cp._pair_entries(js, jp)
+            for si_e, pi_e in pairs:
+                a = [cp._norm(x) for x in js[si_e].sdl2.dialogs] if si_e is not None else []
+                eng = es[si_e].sdl2.dialogs if si_e is not None else []
+                raw = jp[pi_e].sdl2.dialogs
+                b = [cp._norm(x) for x in raw]
+                got_all = ep[pi_e].sdl2.dialogs
+                if len(got_all) != len(b):
+                    bad.append(f"{pack}/{stem}[{pi_e}]: {len(got_all)} English lines for {len(b)} Japanese")
+                    continue
+                for op, i1, i2, j1, j2 in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
+                    for k in range(j2 - j1):
+                        si, pi = i1 + k, j1 + k
+                        got = got_all[pi]
+                        same = difflib.SequenceMatcher(None, a[si], b[pi]).ratio() >= cp.MIN_RATIO if op == "replace" and si < i2 else False
+                        if op == "equal" or same:
+                            if canon(got) != canon(eng[si]):
+                                bad.append(f"{pack}/{stem}[{pi_e}.{pi}]: {got!r} is not the script line {eng[si]!r}")
+                        elif want.get(canon(got)) not in (raw[pi], b[pi]):
+                            bad.append(f"{pack}/{stem}[{pi_e}.{pi}]: pack-only {raw[pi]!r} shows {got!r}")
+    assert not bad, f"{len(bad)} NLP lines without reviewed English, e.g.\n" + "\n".join(bad[:15])

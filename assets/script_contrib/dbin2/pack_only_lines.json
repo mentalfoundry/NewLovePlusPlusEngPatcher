@@ -1,0 +1,254 @@
+{
+ "a002": {
+  "lines": {}
+ },
+ "a003": {
+  "lines": {}
+ },
+ "a004": {
+  "lines": {}
+ },
+ "a005": {
+  "lines": {}
+ },
+ "a061": {
+  "lines": {
+   "うん、行きたい。あれだけ楽しかったんだもん。": "Yeah, I want to go. We had\nsuch a great time, after all.",
+   "じゃあ。▲月▲▲日▲からの１泊２日で！": "Alright. A two-day trip\nstarting on ▲月▲ ▲日▲！"
+  }
+ },
+ "a108": {
+  "lines": {}
+ },
+ "a117": {
+  "lines": {}
+ },
+ "a134": {
+  "lines": {
+   "あるかも": "Maybe there is.",
+   "すっごく悔しい！": "It's so frustrating！",
+   "たまにしか来ないな": "I only come once in a while.",
+   "どうとも思わない": "Doesn't really bother me.",
+   "どうなんだろう？": "Who knows？",
+   "ない、ない": "No, no.",
+   "まあ、たまにね": "Well, sometimes.",
+   "やめといたほうがいい": "Better not.",
+   "別に変じゃない": "It's not that weird."
+  }
+ },
+ "a142": {
+  "lines": {
+   "▲姉ヶ崎＊▲。": "▲姉ヶ崎＊▲.",
+   "見つめる": "Gaze at her",
+   "（あ、花壇の世話……遅くなったし、今日はもう帰るか）": "(Oh, the flowerbeds... It's\nlate now, so I might as well\nhead home for today.)"
+  }
+ },
+ "a912": {
+  "align_entries": true,
+  "lines": {
+   "もう一度": "Try again"
+  }
+ },
+ "a913": {
+  "lines": {}
+ },
+ "a955": {
+  "lines": {}
+ },
+ "k005": {
+  "lines": {}
+ },
+ "k007": {
+  "lines": {}
+ },
+ "k061": {
+  "lines": {
+   "じゃあ。▲月▲▲日▲からの１泊２日で！": "Alright. A two-day trip\nstarting on ▲月▲ ▲日▲！"
+  }
+ },
+ "k108": {
+  "lines": {}
+ },
+ "k117": {
+  "lines": {}
+ },
+ "k118": {
+  "lines": {
+   "そういえばそうだ。さすがに眠くなってきた？": "Come to think of it, you're\nright. Are you getting sleepy\nby now？",
+   "突然呼び出してごめん。これ、渡そうと思ってさ。": "Sorry for calling you out of\nthe blue. I wanted to give you\nthis."
+  }
+ },
+ "k134": {
+  "lines": {
+   "あるかも": "Maybe there is.",
+   "しょっちゅうだな": "All the time.",
+   "すっごく悔しい！": "It's so frustrating！",
+   "たまにしか来ないな": "I only come once in a while.",
+   "どうとも思わない": "Doesn't really bother me.",
+   "どうなんだろう？": "Who knows？",
+   "ない、ない": "No, no.",
+   "まあ、たまにね": "Well, sometimes.",
+   "やめといたほうがいい": "Better not.",
+   "別に変じゃない": "It's not that weird.",
+   "好きだよ": "I like it.",
+   "嫌いかな": "I guess I don't like it."
+  }
+ },
+ "k142": {
+  "lines": {
+   "▲小早川＊▲！": "▲小早川＊▲！",
+   "見つめる": "Gaze at her"
+  }
+ },
+ "k912": {
+  "align_entries": true,
+  "lines": {
+   "もう一度": "Try again"
+  }
+ },
+ "k913": {
+  "lines": {}
+ },
+ "p001": {
+  "lines": {
+   "よーし、明日は土曜だ！": "All right, tomorrow's\nSaturday！",
+   "明日は月曜、また一週間がんばるか！": "Tomorrow's Monday. Guess I'll\ndo my best again this week！"
+  }
+ },
+ "p003": {
+  "lines": {
+   "ここ、人目につかなそうな場所もあったんだな。ここなら彼女と二人きりになれるかも……。": "There are some secluded spots\nhere too, huh. I might be able\nto get time alone with my\ngirlfriend here...",
+   "新作出てたんだな、知らなかった。来て良かったな！": "So a new one came out. I had\nno idea. Glad I came！",
+   "特に何もなかったな、無駄足だったかも。": "Nothing special here. Might've\nbeen a wasted trip.",
+   "視聴したやつ、全部ハズレだ……。": "Everything I tried out was a\ndud...",
+   "試聴したやつ、全部ハズレだ……。": "Everything I sampled was a\ndud..."
+  }
+ },
+ "p060": {
+  "lines": {
+   "（どうしよう。また▲彼女＊＊▲と行けるかな……）": "(What should I do...\nCould I go with\n▲彼女＊＊▲ again...)"
+  }
+ },
+ "p073": {
+  "lines": {
+   "（クラスで喫茶店……まずはどんなメニューを出すか決めないとな）": "(A class cafe... First I need\nto decide what to put on the\nmenu.)",
+   "（クラスで喫茶店……接客の仕方を決めて、あとは当日のシフト組みかな）": "(Class cafe... I need to\ndecide how to serve customers,\nthen work out the shifts for\nthe day, I guess.)",
+   "（図書委員で紙芝居……とにかく絵を描いて、物を用意しないと）": "(Picture-story show for the\nlibrary committee... Either\nway, I have to draw the\npictures and prepare things.)",
+   "（図書委員で紙芝居……まずは題材をどうするか決めないとな）": "(A picture-story show for the\nlibrary committee... First I\nneed to decide on a subject.)",
+   "（図書委員で紙芝居……各自の作業分担を決めないとな）": "(Picture-story show for the\nlibrary committee... We need\nto decide who does what.)",
+   "（模擬店で焼きそば……まずは、焼きそばそのものをどんな味にするか決めないとな）": "(A yakisoba stall... First I\nneed to decide what flavor the\nyakisoba should be.)",
+   "（模擬店で焼きそば……屋台の準備をしないと）": "(Yakisoba stall... I need to\nget the stall set up.)",
+   "（模擬店で焼きそば……調理器具や食器類も用意しないとな）": "(Yakisoba stall... I need to\nget cookware and dishes ready\ntoo.)"
+  }
+ },
+ "p077": {
+  "lines": {
+   "ここ、人目につかなそうな場所もあったんだな。ここなら彼女と二人きりになれるかも……。": "There are some secluded spots\nhere too, huh. I might be able\nto get time alone with my\ngirlfriend here...",
+   "この店にいると、つい色々買っちゃうんだよな……無駄なものも……。": "Whenever I'm in this store, I\nend up buying all kinds of\nthings... even useless ones...",
+   "もうすぐ海開きか……このあたりもゴミゴミするんだろうな。": "The beach opens soon, huh...\nThis area's going to get\ncrowded and messy, I bet.",
+   "もうすぐ海開きか……海水浴、楽しみだな！": "The beach opens soon, huh... I\ncan't wait to go swimming！",
+   "ブラブラ見て回っただけだけど、結構楽しかったな。": "I just wandered around, but it\nwas pretty fun.",
+   "面白そうなものもなかったし……無駄に時間過ごしちゃったかもな。": "Nothing looked interesting...\nI might've just wasted my\ntime."
+  }
+ },
+ "p078": {
+  "lines": {
+   "ん～……明日が終われば週末だ！": "Hmm... Once tomorrow's over,\nit's the weekend！",
+   "明日は土曜。さて、なにしよっかな。": "Tomorrow's Saturday. Now, what\nshould I do？",
+   "明日は月曜。また一週間がんばろう！": "Tomorrow's Monday. I'll do my\nbest again this week！"
+  }
+ },
+ "p084": {
+  "lines": {
+   "ありがとうございました。": "Thank you very much."
+  }
+ },
+ "p086": {
+  "lines": {
+   "“いつもご利用ありがとうございます。皆さまのご愛顧をもちまして、当園の延べ来場者が▲人数▲人を突破いたしました。": "\"Thank you for your\ncontinued patronage. Thanks\nto everyone's support, our\npark's total visitors have\nsurpassed ▲人数▲.",
+   "“いつもご利用ありがとうございます。皆さまのご愛顧をもちまして、当館の延べ来場者が▲人数▲人を突破いたしました。": "\"Thank you for your\ncontinued patronage. Thanks\nto everyone's support, our\nfacility's total visitors\nhave surpassed\n▲人数▲."
+  }
+ },
+ "p900": {
+  "lines": {
+   "……。": "...",
+   "すごく褒める": "Praise her lavishly",
+   "それとなく褒める": "Compliment her subtly",
+   "なんでもない": "Never mind",
+   "カノジョのアクセが気になる": "I'm curious about her\naccessories",
+   "カノジョの服が気になる": "I'm curious about her outfit",
+   "カノジョの髪が気になる": "I'm curious about her hair",
+   "キススキンシップ": "Kiss skinship",
+   "移動": "Move",
+   "食事お誘い": "Invite to a meal"
+  }
+ },
+ "t005": {
+  "lines": {}
+ },
+ "t036": {
+  "lines": {}
+ },
+ "t061": {
+  "lines": {
+   "……うん。また、行きたい。": "...Yeah. I want to go again.",
+   "じゃあ。▲月▲▲日▲からの１泊２日で！": "Alright. A two-day trip\nstarting on ▲月▲ ▲日▲！"
+  }
+ },
+ "t107": {
+  "lines": {
+   "女子": "Girls"
+  }
+ },
+ "t108": {
+  "lines": {}
+ },
+ "t116": {
+  "lines": {}
+ },
+ "t117": {
+  "lines": {}
+ },
+ "t134": {
+  "lines": {
+   "あるかも": "Maybe there is.",
+   "しょっちゅうだな": "All the time.",
+   "すっごく悔しい！": "It's so frustrating！",
+   "たまにしか来ないな": "I only come once in a while.",
+   "どうとも思わない": "Doesn't really bother me.",
+   "どうなんだろう？": "Who knows？",
+   "ない、ない": "No, no.",
+   "まあ、たまにね": "Well, sometimes.",
+   "やめといたほうがいい": "Better not.",
+   "別に変じゃない": "It's not that weird."
+  }
+ },
+ "t142": {
+  "lines": {
+   "▲高嶺＊＊▲！": "▲Takane＊＊▲！",
+   "仮": "Placeholder",
+   "見つめる": "Gaze at her"
+  }
+ },
+ "t800": {
+  "lines": {}
+ },
+ "t912": {
+  "align_entries": true,
+  "lines": {
+   "もう一度": "Try again"
+  }
+ },
+ "t913": {
+  "lines": {}
+ },
+ "t941": {
+  "lines": {}
+ },
+ "t953": {
+  "lines": {}
+ },
+ "t955": {
+  "lines": {}
+ }
+}
