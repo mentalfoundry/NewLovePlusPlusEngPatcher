@@ -38,9 +38,14 @@ def _game_wrap(text: str, width: int) -> str:
 def test_columns_count_wide_glyphs_and_marker_budgets():
     assert dw.columns("abc") == 3
     assert dw.columns("Eh？") == 4
-    assert dw.columns("Hi ▲Takane＊＊▲.") == 3 + dw.NAME_COLUMNS + 1
-    assert dw.columns("▲小早川＊▲") == dw.NAME_COLUMNS
-    assert dw.columns("● ▲月▲") == dw.NAME_COLUMNS + 1 + 9
+    # 2 cells per letter of the name (rig: "ab▲小早川＊▲" + 8 letters fills 30).
+    assert dw.columns("Hi ▲Takane＊＊▲.") == 3 + 12 + 1
+    assert dw.columns("▲小早川＊▲") == 20
+    assert dw.columns("▲Kobayaka＊▲") == 20
+    assert dw.columns("▲姉ヶ崎＊▲") == 16
+    assert dw.columns("▲彼女＊＊▲") == dw.NAME_COLUMNS == 20
+    assert dw.columns("▲名前▲") == dw.PLAYER_NAME_COLUMNS == 12
+    assert dw.columns("● ▲月▲") == dw.PLAYER_NAME_COLUMNS + 1 + 9
     assert dw.columns("▲デート場所▲") == dw.OTHER_MARKER_COLUMNS
 
 
@@ -144,25 +149,24 @@ def test_choice_buttons_are_found_from_their_commands():
 
 
 def test_kobayakawa_still_fits_the_photographed_k142_lines():
-    # The photos cut "absen / t," and "agai / n..." after the 10-letter
-    # surname. The marker is budgeted at that surname, so both lines break
-    # at spaces and stay inside 30 once the name is filled in.
+    # The photos cut "absen / t," and "agai / n..." because the 10-letter
+    # surname reserves 20 cells: "(" + 20 + "'s absen" is 29, and the
+    # comma at 31 makes kinsoku pull the "t" down with it. The marker is
+    # budgeted at those 20 cells, so both lines break at spaces and every
+    # line stays inside 30 as the game counts it.
     absent = "(▲Kobayaka＊▲'s absent, huh... I hope nothing happened to her.)"
     again = "（Don't tell me that's about ▲Kobayaka＊▲ again...）"
-    shown = [
-        dw.wrap_dialog(absent).replace("▲Kobayaka＊▲", "Kobayakawa"),
-        dw.wrap_dialog(again).replace("▲Kobayaka＊▲", "Kobayakawa"),
-    ]
+    shown = [dw.wrap_dialog(absent), dw.wrap_dialog(again)]
     assert shown[0] == (
-        "(Kobayakawa's absent, huh... I\nhope nothing happened to her.)"
+        "(▲Kobayaka＊▲'s\nabsent, huh... I hope nothing\nhappened to her.)"
     )
     assert shown[1] == (
-        "（Don't tell me that's about\nKobayakawa again...）"
+        "（Don't tell me that's about\n▲Kobayaka＊▲\nagain...）"
     )
     for text in shown:
         assert "absen\n" not in text and "agai\n" not in text
         for line in text.split("\n"):
-            assert sum(1 if ord(c) < 0x80 else 2 for c in line) <= dw.TALK_COLUMNS
+            assert dw.columns(line) <= dw.TALK_COLUMNS
 
 
 def test_choice_buttons_wrap_at_28_and_talk_at_30():
@@ -183,9 +187,12 @@ def test_over_width_counts_columns_the_game_way():
     # ？ is two columns, so 29 letters + ？ is 31.
     assert dw.over_width("a" * 29 + "？") == [(1, 31)]
     assert dw.over_width("a" * 28 + "？") == []
-    # A name marker is budgeted at NAME_COLUMNS (10) whatever its spelling.
-    assert dw.over_width("▲高嶺＊＊▲" + "a" * 20) == []
-    assert dw.over_width("▲高嶺＊＊▲" + "a" * 21) == [(1, 31)]
+    # A name marker is budgeted by its name's length, whatever its spelling:
+    # Takane is 6 letters = 12 cells, Kobayakawa 10 letters = 20.
+    assert dw.over_width("▲高嶺＊＊▲" + "a" * 18) == []
+    assert dw.over_width("▲高嶺＊＊▲" + "a" * 19) == [(1, 31)]
+    assert dw.over_width("ab▲小早川＊▲" + "a" * 8) == []  # measured in-game: 30 fits
+    assert dw.over_width("ab▲小早川＊▲" + "a" * 9) == [(1, 31)]
     assert dw.over_width("ok\n" + "b" * 29, dw.CHOICE_COLUMNS) == [(2, 29)]
     # Japanese is left to the game's kinsoku wrap.
     assert dw.over_width("あ" * 40) == []

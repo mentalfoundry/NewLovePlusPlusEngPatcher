@@ -21,9 +21,12 @@ held to 28 columns and everything else to 30. A dialog whose lines already
 fit is left alone.
 
 Markers are filled in at run time, so they are budgeted at a fixed width.
-Names use ``NAME_COLUMNS`` (Kobayakawa, the longest surname this patch
-prints). A nickname longer than that still reaches the game, which breaks
-at the previous space (``patch_dialog_break``).
+A name is counted at 2 cells per letter (``NAME_CELLS_PER_LETTER``): the
+break pass reserves that much although English letters draw at 1, so
+Kobayakawa takes 20 of the 30 columns. A heroine's surname marker uses her
+name's length; ``▲彼女＊＊▲`` uses the longest (``NAME_COLUMNS``) and the
+player's own name ``PLAYER_NAME_COLUMNS``. A nickname longer than that still
+reaches the game, which breaks at the previous space (``patch_dialog_break``).
 Dialogs with kana or kanji are left to the game's own kinsoku wrap.
 
 Before the wrap, ``fit_font`` swaps characters the dialog font cannot draw.
@@ -44,17 +47,30 @@ from patch_names import DbinEntry, SDL2Data, build_dbin2, parse_dbin2
 TALK_COLUMNS = 30
 CHOICE_COLUMNS = 28
 
+# The break pass reserves 2 cells per letter of a substituted name, although
+# English letters draw at 1 (rig, 2026-11-19, with patch_dialog_break:
+# "ab▲小早川＊▲ABC..." breaks after 8 letters, 2+20+8 = 30; Takane after 16).
+NAME_CELLS_PER_LETTER = 2
 # Kobayaka is the 8-byte slot key. The name on screen is Kobayakawa (10).
-NAME_COLUMNS = 10
+HEROINE_NAME_LETTERS = {
+    "小早川": 10, "Kobayaka": 10,  # Kobayakawa
+    "高嶺": 6, "Takane": 6,
+    "姉ヶ崎": 8, "Anegasaki": 8,  # Nene-san
+}
+# The player types their own name at profile entry; 6 letters is an assumption.
+PLAYER_NAME_LETTERS = 6
+PLAYER_NAME_COLUMNS = NAME_CELLS_PER_LETTER * PLAYER_NAME_LETTERS
+# ▲彼女＊＊▲ is whichever heroine she is dating: budget the longest.
+NAME_COLUMNS = NAME_CELLS_PER_LETTER * max(HEROINE_NAME_LETTERS.values())
 OTHER_MARKER_COLUMNS = 16
 MARKER_COLUMNS: dict[str, int] = {
-    "●": NAME_COLUMNS,
-    "▲主人公＊▲": NAME_COLUMNS,
-    "▲新主人公▲": NAME_COLUMNS,
+    "●": PLAYER_NAME_COLUMNS,
+    "▲主人公＊▲": PLAYER_NAME_COLUMNS,
+    "▲新主人公▲": PLAYER_NAME_COLUMNS,
     "▲彼女＊＊▲": NAME_COLUMNS,
-    "▲苗字▲": NAME_COLUMNS,
-    "▲名前▲": NAME_COLUMNS,
-    "▲ＨＮ＊＊＊＊▲": NAME_COLUMNS,
+    "▲苗字▲": PLAYER_NAME_COLUMNS,
+    "▲名前▲": PLAYER_NAME_COLUMNS,
+    "▲ＨＮ＊＊＊＊▲": PLAYER_NAME_COLUMNS,
     "▲月▲": 9,  # September
     "▲現在月▲": 9,
     "▲日▲": 4,  # 31st
@@ -66,7 +82,7 @@ MARKER_COLUMNS: dict[str, int] = {
     "▲現在時刻▲": 8,
 }
 # Heroine nickname keys: the family-name slot padded with ＊ (English or JP).
-_NICKNAME_RE = re.compile(r"▲(?:Takane|Kobayaka|Anegasaki|高嶺|小早川|姉ヶ崎)＊+▲")
+_NICKNAME_RE = re.compile(r"▲(Takane|Kobayaka|Anegasaki|高嶺|小早川|姉ヶ崎)＊+▲")
 _MARKER_RE = re.compile(r"▲[^▲\n]*▲|●")
 _WORD_RE = re.compile(r"(?:▲[^▲]*▲|\S)+")
 _JAPANESE_RE = re.compile(r"[぀-ヿ㐀-鿿ｦ-ﾟ]")
@@ -92,8 +108,9 @@ def fit_font(text: str) -> str:
 
 
 def marker_columns(marker: str) -> int:
-    if _NICKNAME_RE.fullmatch(marker):
-        return NAME_COLUMNS
+    nick = _NICKNAME_RE.fullmatch(marker)
+    if nick:
+        return NAME_CELLS_PER_LETTER * HEROINE_NAME_LETTERS[nick.group(1)]
     return MARKER_COLUMNS.get(marker, OTHER_MARKER_COLUMNS)
 
 
