@@ -338,7 +338,7 @@ it's clean...</Dialog>
         </Unknown>
         <Dialogs>
           <Dialog>○○○○○○○○</Dialog>
-          <Dialog>仮</Dialog>
+          <Dialog>temp</Dialog>
           <Dialog>(I promised to help you 
 clean up today, 
 ▲高嶺＊＊▲.)</Dialog>
@@ -9436,7 +9436,7 @@ weird things lately,
           <Dialog>Hmm？ What's wrong？</Dialog>
           <Dialog>I was recently wondering 
 if I have changed.</Dialog>
-          <Dialog>Hmmー, now that you mention 
+          <Dialog>Hmm... now that you mention 
 it, I do wonder about 
 it...</Dialog>
           <Dialog>I don't think so...</Dialog>
@@ -9736,7 +9736,7 @@ I wasn't confident I was
 doing the right thing...</Dialog>
           <Dialog>How can I know if I'm 
 doing the right thing？</Dialog>
-          <Dialog>Hmmー I wonder. I don't 
+          <Dialog>Hmm... I wonder. I don't 
 think many students know 
 the answer... Isn't your 
 father a good teacher, 
@@ -10566,7 +10566,7 @@ today...)</Dialog>
           <Dialog>(She's wandering around the 
 entrance of Winning 
 Burger...)</Dialog>
-          <Dialog>Hmmー...</Dialog>
+          <Dialog>Hmm...</Dialog>
           <Dialog>(She doesn't dare to go 
 in alone...)</Dialog>
           <Dialog>Hey, how are you doing？</Dialog>

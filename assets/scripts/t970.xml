@@ -766,12 +766,12 @@
           <Dialog>4:</Dialog>
           <Dialog>5:</Dialog>
           <Dialog>Return</Dialog>
-          <Dialog>random=&gt;デフォルトの挙動</Dialog>
-          <Dialog>random=&gt;0固定</Dialog>
-          <Dialog>random=&gt;1固定</Dialog>
-          <Dialog>random=&gt;2固定</Dialog>
-          <Dialog>random=&gt;3固定</Dialog>
-          <Dialog>random=&gt;4固定</Dialog>
+          <Dialog>random=&gt;Default behavior</Dialog>
+          <Dialog>random=&gt;Fixed to 0</Dialog>
+          <Dialog>random=&gt;Fixed to 1</Dialog>
+          <Dialog>random=&gt;Fixed to 2</Dialog>
+          <Dialog>random=&gt;Fixed to 3</Dialog>
+          <Dialog>random=&gt;Fixed to 4</Dialog>
           <Dialog>Settings saved</Dialog>
           <Dialog>Set to innocent</Dialog>
           <Dialog>Set to not innocent</Dialog>
@@ -807,36 +807,36 @@
           <Dialog>Morning</Dialog>
           <Dialog>Soup spoon</Dialog>
           <Dialog>One hand:Full grip</Dialog>
-          <Dialog>百の位 000</Dialog>
-          <Dialog>百の位 100</Dialog>
-          <Dialog>百の位 200</Dialog>
-          <Dialog>百の位 300</Dialog>
-          <Dialog>百の位 400</Dialog>
-          <Dialog>百の位 500</Dialog>
-          <Dialog>百の位 600</Dialog>
-          <Dialog>百の位 700</Dialog>
-          <Dialog>百の位 800</Dialog>
-          <Dialog>百の位 900</Dialog>
-          <Dialog>十の位 00</Dialog>
-          <Dialog>十の位 10</Dialog>
-          <Dialog>十の位 20</Dialog>
-          <Dialog>十の位 30</Dialog>
-          <Dialog>十の位 40</Dialog>
-          <Dialog>十の位 50</Dialog>
-          <Dialog>十の位 60</Dialog>
-          <Dialog>十の位 70</Dialog>
-          <Dialog>十の位 80</Dialog>
-          <Dialog>十の位 90</Dialog>
-          <Dialog>一の位 0</Dialog>
-          <Dialog>一の位 1</Dialog>
-          <Dialog>一の位 2</Dialog>
-          <Dialog>一の位 3</Dialog>
-          <Dialog>一の位 4</Dialog>
-          <Dialog>一の位 5</Dialog>
-          <Dialog>一の位 6</Dialog>
-          <Dialog>一の位 7</Dialog>
-          <Dialog>一の位 8</Dialog>
-          <Dialog>一の位 9</Dialog>
+          <Dialog>Hundreds 000</Dialog>
+          <Dialog>Hundreds 100</Dialog>
+          <Dialog>Hundreds 200</Dialog>
+          <Dialog>Hundreds 300</Dialog>
+          <Dialog>Hundreds 400</Dialog>
+          <Dialog>Hundreds 500</Dialog>
+          <Dialog>Hundreds 600</Dialog>
+          <Dialog>Hundreds 700</Dialog>
+          <Dialog>Hundreds 800</Dialog>
+          <Dialog>Hundreds 900</Dialog>
+          <Dialog>Tens 00</Dialog>
+          <Dialog>Tens 10</Dialog>
+          <Dialog>Tens 20</Dialog>
+          <Dialog>Tens 30</Dialog>
+          <Dialog>Tens 40</Dialog>
+          <Dialog>Tens 50</Dialog>
+          <Dialog>Tens 60</Dialog>
+          <Dialog>Tens 70</Dialog>
+          <Dialog>Tens 80</Dialog>
+          <Dialog>Tens 90</Dialog>
+          <Dialog>Ones 0</Dialog>
+          <Dialog>Ones 1</Dialog>
+          <Dialog>Ones 2</Dialog>
+          <Dialog>Ones 3</Dialog>
+          <Dialog>Ones 4</Dialog>
+          <Dialog>Ones 5</Dialog>
+          <Dialog>Ones 6</Dialog>
+          <Dialog>Ones 7</Dialog>
+          <Dialog>Ones 8</Dialog>
+          <Dialog>Ones 9</Dialog>
           <Dialog>Again</Dialog>
           <Dialog>Stop</Dialog>
         </Dialogs>

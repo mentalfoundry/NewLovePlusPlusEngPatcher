@@ -866,9 +866,9 @@ do some research.</Dialog>
           <Dialog>I want some Japanese food</Dialog>
           <Dialog>I want some Western food</Dialog>
           <Dialog>I want some Chinese food</Dialog>
-          <Dialog>ジャンル４　未使用</Dialog>
-          <Dialog>ジャンル５　未使用</Dialog>
-          <Dialog>ジャンル６　未使用</Dialog>
+          <Dialog>Genre ４ (unused)</Dialog>
+          <Dialog>Genre ５ (unused)</Dialog>
+          <Dialog>Genre ６ (unused)</Dialog>
         </Dialogs>
       </SDL2>
     </Entry>
