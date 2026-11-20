@@ -350,9 +350,10 @@ def ensure_romfs_dir(romfs_bin: Path, romfs_dir: Path, reuse: Path | None) -> Pa
     return romfs_dir
 
 
-# Layered inject: Manaka t* + EngPatcher p* + community ~28% + optional Gemini
-# Nene/Rinko (see script_inject.py / NLPP_INCLUDE_GEMINI_NENE). The same flag
-# also splices Gemini SMS into a copy of img.bin. Contributor files win.
+# Layered inject: Manaka t* + EngPatcher p* + reviewed contributor files +
+# community + optional Gemini Nene/Rinko (see script_inject.py /
+# NLPP_INCLUDE_GEMINI_NENE). Reviewed SMS ship in every build (_apply_sms); the
+# same flag lets Gemini SMS fill a heroine without one. Contributor files win.
 from script_inject import CONTRIB_DBIN, resolve_script_source  # noqa: E402
 
 
@@ -980,21 +981,35 @@ def _require_name_input_for_ui(args: argparse.Namespace) -> None:
         )
 
 
-GEMINI_SMS_IMG = "img_gemini_sms.bin"
+SMS_IMG = "img_sms.bin"
+SMS_STEMS = ("maildic_m", "maildic_n", "maildic_r")
 
 
-def _apply_gemini_sms(img: Path, work: Path) -> Path:
-    """Splice Gemini SMS into a copy of img.bin. Leaves the bake and XML alone.
+def _sms_source() -> Path | None:
+    """``--en-dir`` for English SMS, or None to leave the Japanese bake as is.
 
-    A file in assets/sms_contrib/ replaces that heroine's Gemini dictionary.
+    The reviewed dictionaries in assets/sms_contrib/ ship in every build once
+    all three heroines have one (deploy_sms_maildic_en.py prefers them per
+    heroine). The Gemini opt-in passes its own directory for anything else.
     """
-    if not _env_flag("NLPP_INCLUDE_GEMINI_NENE"):
+    contrib = ROOT / "assets" / "sms_contrib"
+    gemini = ROOT / "assets" / "gemini_heroines" / "sms"
+    if _env_flag("NLPP_INCLUDE_GEMINI_NENE"):
+        if not (gemini / "maildic_m.en.xml").is_file():
+            raise PatchError(f"Gemini SMS missing: {gemini}")
+        return gemini
+    if all((contrib / f"{stem}.en.xml").is_file() for stem in SMS_STEMS):
+        return contrib
+    return None
+
+
+def _apply_sms(img: Path, work: Path) -> Path:
+    """Splice English SMS into a copy of img.bin. Leaves the bake and XML alone."""
+    en_dir = _sms_source()
+    if en_dir is None:
         return img
-    sms_dir = ROOT / "assets" / "gemini_heroines" / "sms"
-    if not (sms_dir / "maildic_m.en.xml").is_file():
-        raise PatchError(f"Gemini SMS missing: {sms_dir}")
-    dest = work / GEMINI_SMS_IMG
-    print(f"[sms] copying {img.name} and splicing Gemini SMS")
+    dest = work / SMS_IMG
+    print(f"[sms] copying {img.name} and splicing English SMS ({en_dir.relative_to(ROOT)})")
     shutil.copy2(img, dest)
     script = ROOT / "tools" / "deploy_sms_maildic_en.py"
     _run(
@@ -1004,7 +1019,7 @@ def _apply_gemini_sms(img: Path, work: Path) -> Path:
             "--img",
             str(dest),
             "--en-dir",
-            str(sms_dir),
+            str(en_dir),
             "--no-backup",
         ]
     )
@@ -1557,9 +1572,13 @@ def build_patch_summary(
             _summary_line(
                 "SKIPPED",
                 "Gemini Nene, Rinko, and SMS",
-                "community Nene/Rinko layer, Japanese SMS",
+                "reviewed Nene/Rinko dialogue and SMS ship without it",
             )
         )
+    if packed_img is not None and packed_img.name == SMS_IMG:
+        lines.append(_summary_line("OK", "Phone messages (SMS)", "English (assets/sms_contrib wins per heroine)"))
+    else:
+        lines.append(_summary_line("SKIPPED", "Phone messages (SMS)", "Japanese (no reviewed set, or no img.bin)"))
 
     if CONTRIB_DBIN.is_dir():
         contrib_stems = {path.stem for path in CONTRIB_DBIN.glob("*/*.dbin2")}
@@ -1644,10 +1663,10 @@ def build_patch_summary(
             )
         )
     elif packed_img is not None:
-        # Injection hard-fails, so a packed img here was injected. The Gemini
-        # SMS copy lives in the work dir, which cleanup deletes before this.
-        if packed_img.name == GEMINI_SMS_IMG:
-            kind = "gold bake + Gemini SMS"
+        # Injection hard-fails, so a packed img here was injected. The SMS
+        # copy lives in the work dir, which cleanup deletes before this.
+        if packed_img.name == SMS_IMG:
+            kind = "gold bake + English SMS"
         elif packed_img.resolve() == DEFAULT_BAKE_IMG.resolve():
             kind = "gold bake"
         else:
@@ -2013,7 +2032,7 @@ def _cmd_patch_body_impl(
         # Patch badge — the Sep 2026 Desktop CIA regression.
         timer.mark("resolving / packing UI img.bin")
         tick("UI images", 0.0)
-        packed_img = _apply_gemini_sms(pack_ui_images(args, work), work)
+        packed_img = _apply_sms(pack_ui_images(args, work), work)
         layered_img = packed_img
         # Probe now: cleanup may delete a work-dir copy before the summary.
         try:

@@ -392,13 +392,13 @@ def test_parser_has_log_flags():
 
 
 def test_summary_ok_when_gemini_copy_was_cleaned_up(tmp_path: Path, monkeypatch):
-    # Cleanup deletes out/cia_work (and the Gemini SMS img copy in it) before
+    # Cleanup deletes out/cia_work (and the English SMS img copy in it) before
     # the summary. It used to report "[SKIPPED] UI img.bin" for an injected img.
     bake = tmp_path / "release" / "bake_img.bin"
     bake.parent.mkdir(parents=True)
     bake.write_bytes(b"gold")
     monkeypatch.setattr(patch_cia, "DEFAULT_BAKE_IMG", bake)
-    gone = tmp_path / "cia_work" / patch_cia.GEMINI_SMS_IMG
+    gone = tmp_path / "cia_work" / patch_cia.SMS_IMG
     lines = patch_cia.build_patch_summary(
         out_cia=None,
         packed_img=gone,
@@ -410,6 +410,7 @@ def test_summary_ok_when_gemini_copy_was_cleaned_up(tmp_path: Path, monkeypatch)
     )
     text = "\n".join(lines)
     assert "[OK]      UI img.bin" in text
-    assert "gold bake + Gemini SMS" in text
+    assert "gold bake + English SMS" in text
+    assert "[OK]      Phone messages (SMS)" in text
     assert "[OK]      Eng Patch title badge" in text
     assert "[SKIPPED] UI img.bin" not in text

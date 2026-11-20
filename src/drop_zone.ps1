@@ -538,7 +538,7 @@ $geminiText.BackColor = [NlppUi.NlppTheme]::Panel
 $geminiText.AutoSize = $false
 $geminiText.TextAlign = "MiddleLeft"
 $geminiText.SetBounds(18, 34, ($innerW - 18 - 72), $rowH)
-$tips.SetToolTip($geminiText, "Off: community Nene/Rinko layer and Japanese SMS.`nOn: fill the rest with the Gemini machine pass.`nReviewed workbench lines ship either way and win over Gemini.")
+$tips.SetToolTip($geminiText, "Off: reviewed Nene/Rinko dialogue and phone messages only.`nOn: also let the Gemini machine pass fill anything without a reviewed file.`nReviewed files ship either way and win over Gemini.")
 
 $gemini = New-Object NlppUi.ToggleSwitch
 $gemini.SetBounds(($innerW - 18 - 48), 40, 48, 26)

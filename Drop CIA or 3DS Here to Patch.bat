@@ -273,14 +273,14 @@ if exist "%~dp0.git" if not defined NLPP_SKIP_GOLD_FETCH if /i not "%NLPP_REPACK
 
 REM Optional Gemini Nene/Rinko dialogue and SMS (assets\gemini_heroines).
 REM Asked after the gold-bake question. Any preset NLPP_INCLUDE_GEMINI_NENE
-REM (0 or 1) skips the prompt. Default is off — community ~28% Nene/Rinko
-REM and Japanese SMS. Workbench reviews in assets\script_contrib and
-REM assets\sms_contrib still ship, and they win over this machine pass.
+REM (0 or 1) skips the prompt. Default is off. Reviewed Nene/Rinko dialogue
+REM (assets\script_contrib) and phone messages (assets\sms_contrib) ship
+REM either way, and they win over this machine pass.
 if not defined NLPP_INCLUDE_GEMINI_NENE (
   echo.
   echo Optional: Gemini machine-pass Nene and Rinko dialogue, plus SMS ^(unreviewed^).
-  echo Default keeps the community ~28%% Nene/Rinko layer and Japanese SMS.
-  echo Reviewed workbench files still ship either way and win over Gemini.
+  echo Reviewed Nene/Rinko dialogue and phone messages ship either way
+  echo and win over Gemini, so the default needs nothing from it.
   set "NENE_ANS="
   set /p "NENE_ANS=Include Gemini Nene, Rinko, and SMS? [y/N]: "
   if /i "!NENE_ANS!"=="y" set "NLPP_INCLUDE_GEMINI_NENE=1"
@@ -291,7 +291,7 @@ if not defined NLPP_INCLUDE_GEMINI_NENE (
 if /i "%NLPP_INCLUDE_GEMINI_NENE%"=="1" (
   echo Including Gemini Nene, Rinko, and SMS ^(machine pass, unreviewed^).
 ) else (
-  echo Skipping Gemini Nene, Rinko, and SMS ^(community layer, Japanese SMS^).
+  echo Skipping Gemini Nene, Rinko, and SMS ^(reviewed English ships without it^).
 )
 
 echo.

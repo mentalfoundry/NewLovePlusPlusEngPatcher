@@ -2472,16 +2472,30 @@ def test_cia_code_images_and_summary(monkeypatch, tmp_path: Path):
     patch_cia._require_name_input_for_ui(_ns(patch_code=True))
     patch_cia._require_name_input_for_ui(_ns(inject_code=str(explicit)))
 
-    assert patch_cia._apply_gemini_sms(src_img, work) == src_img
+    ran = []
+    real_run = patch_cia._run
+    monkeypatch.setattr(patch_cia, "_run", lambda cmd, **_k: ran.append(cmd))
+    assert patch_cia._apply_sms(src_img, work) == src_img  # no reviewed set: Japanese bake
+    contrib = patch_cia.ROOT / "assets" / "sms_contrib"
+    contrib.mkdir(parents=True, exist_ok=True)
+    for stem in patch_cia.SMS_STEMS[:2]:
+        (contrib / f"{stem}.en.xml").write_text("<x/>", encoding="utf-8")
+    assert patch_cia._apply_sms(src_img, work) == src_img  # one heroine short: still Japanese
+    (contrib / "maildic_r.en.xml").write_text("<x/>", encoding="utf-8")
+    out_sms = patch_cia._apply_sms(src_img, work)  # reviewed set ships without Gemini
+    assert out_sms.name == patch_cia.SMS_IMG
+    assert ran[-1][ran[-1].index("--en-dir") + 1] == str(contrib)
     monkeypatch.setenv("NLPP_INCLUDE_GEMINI_NENE", "1")
     with pytest.raises(patch_cia.PatchError, match="Gemini SMS"):
-        patch_cia._apply_gemini_sms(src_img, work)
+        patch_cia._apply_sms(src_img, work)
     sms = patch_cia.ROOT / "assets" / "gemini_heroines" / "sms" / "maildic_m.en.xml"
     sms.parent.mkdir(parents=True, exist_ok=True)
     sms.write_text("<x/>", encoding="utf-8")
-    out_sms = patch_cia._apply_gemini_sms(src_img, work)
-    assert out_sms.name == patch_cia.GEMINI_SMS_IMG
+    out_sms = patch_cia._apply_sms(src_img, work)
+    assert out_sms.name == patch_cia.SMS_IMG
+    assert ran[-1][ran[-1].index("--en-dir") + 1] == str(sms.parent)
     monkeypatch.delenv("NLPP_INCLUDE_GEMINI_NENE", raising=False)
+    monkeypatch.setattr(patch_cia, "_run", real_run)
 
     import pack_images
 
@@ -2620,7 +2634,7 @@ def test_cia_code_images_and_summary(monkeypatch, tmp_path: Path):
     title.mkdir(parents=True)
     summary = patch_cia.build_patch_summary(
         out_cia=cia_file,
-        packed_img=work / patch_cia.GEMINI_SMS_IMG,
+        packed_img=work / patch_cia.SMS_IMG,
         layered_img=img,
         layeredfs_out=tmp_path / "lfs",
         romfs_overlay=overlay,
@@ -2629,7 +2643,7 @@ def test_cia_code_images_and_summary(monkeypatch, tmp_path: Path):
         title_ver=7,
         elapsed="2s",
     )
-    (work / patch_cia.GEMINI_SMS_IMG).write_bytes(b"g")
+    (work / patch_cia.SMS_IMG).write_bytes(b"g")
     summary = patch_cia.build_patch_summary(
         out_cia=tmp_path / "missing.cia",
         packed_img=patch_cia.DEFAULT_BAKE_IMG,
@@ -3131,7 +3145,7 @@ def test_cia_leftover_edges(monkeypatch, tmp_path: Path, capsys):
     packed_img = tmp_path / "packed.img"
     packed_img.write_bytes(b"pack")
     monkeypatch.setattr(patch_cia, "pack_ui_images", lambda *_a, **_k: packed_img)
-    monkeypatch.setattr(patch_cia, "_apply_gemini_sms", lambda img, _w: img)
+    monkeypatch.setattr(patch_cia, "_apply_sms", lambda img, _w: img)
     def probe(_img, **_k):
         if not probe.done:
             probe.done = True

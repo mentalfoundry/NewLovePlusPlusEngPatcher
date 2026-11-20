@@ -2330,8 +2330,9 @@ Gold bake unchanged by script-layer changes; redeploy LayeredFS after `img.bin` 
 | Item | Detail |
 |------|--------|
 | Storage | `img.bin` pkg **92**: `maildic_m.mdc`, `maildic_n.mdc`, `maildic_r.mdc` |
-| Gold bake | **Japanese** (rolled back for nickname-placeholder audit). The bake file itself stays Japanese |
-| Gemini opt-in | Same Drop yes as Nene/Rinko (`NLPP_INCLUDE_GEMINI_NENE=1`). `patch_cia.py` copies `img.bin` and `deploy_sms_maildic_en.py --en-dir assets/gemini_heroines/sms` splices `maildic_{m,n,r}` into that copy |
+| Gold bake | **Japanese**. The bake file itself stays Japanese; English is spliced into a copy at CIA time |
+| Default (2026-11-20) | `patch_cia._apply_sms` copies `img.bin` to `img_sms.bin` and runs `deploy_sms_maildic_en.py --en-dir assets/sms_contrib` whenever all three reviewed dictionaries exist (all 1,822 messages reviewed 2026-11-19, plus `worddic.en.json`). Rig-verified in Mail (`work/review_images/sms_mail_en.png`). PATCH SUMMARY shows `Phone messages (SMS)` |
+| Gemini opt-in | Same Drop yes as Nene/Rinko (`NLPP_INCLUDE_GEMINI_NENE=1`) passes `--en-dir assets/gemini_heroines/sms`; the reviewed file still wins per heroine |
 | Contributor SMS | `assets/sms_contrib/maildic_{m,n,r}.en.xml` replaces that heroine's Gemini dictionary when the file exists. Gemini `sms/` is not edited. Script-pack ingest does not write this directory |
 | Older EN path | `tools/translate_sms_en.py` → `assets/sms_en/` → `rebuild_bake_img.py --include-sms` or `deploy_sms_maildic_en.py` |
 | Restore JP | `tools/restore_sms_maildic_jpn.py` |
@@ -2357,7 +2358,7 @@ Safe to delete (~5 GB): duplicate `cache/*.img.bin` scratch (smoke tests, NLPPCT
 | Item | Status |
 |------|--------|
 | In-game verify nicknames after resident TRB fix | Family slots shipped 2026-10-11 (**§23**). `▲主人公＊▲` and the player marks `▲苗字▲` / `▲名前▲` are still open |
-| Re-enable EN SMS after placeholder audit | Opt-in on Drop (`NLPP_INCLUDE_GEMINI_NENE=1`) splices Gemini `assets/gemini_heroines/sms`. Gold bake stays JP. `assets/sms_en/` + `--include-sms` remains the older path |
+| Re-enable EN SMS after placeholder audit | Done 2026-11-20: reviewed `assets/sms_contrib` ships in every CIA (§19.4). Rinko's `[40]`/`[41]` slots are filled from outside worddic and are not yet seen in-game |
 | Full Rinko / Nene routes | Community ~28% by default. Gemini `a*` / `k*` machine pass when Drop opts in. Reviewed stems in `assets/script_contrib/` always win |
 | `img.bin` name table — 0 replacements on last deploy | Exact C-string slots via `deploy_day_counter_en.py` (**§23**). Leave `patch_name_table_bytes` off the live blob |
 | Fansite progress page | Consume `out/progress_metrics.json`; see `docs/TRANSLATION_PROGRESS.md` (recounted 2026-10-20: **564** chrome / **1765** mapped) |
