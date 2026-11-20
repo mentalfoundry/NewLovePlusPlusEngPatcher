@@ -878,6 +878,10 @@ The atlas boxes are the JP fields. Top box `(10, 24)` is 姓 → **Last Name**. 
 
 The birthday value is the DrawText at file `0x00350254` (pane index 5). Vanilla sprintf's the month byte, strcat's TRB slot `0x3f` (`月` → `Month`), then the day byte and slot `0x3e` (`日` → ` Day(s)`), so June 23 reads `6Month23 Day(s)`. `patch_profile_birthday.py` overwrites that stretch and writes `June 23` into the same 24-byte buffer. The shared `月` / `日` tokens stay. The year-month-day sprintfs at `0x0021620c` and `0x00228910` stay.
 
+**Date present picker (2026-11-20)**
+
+Before a date (Phone → Call Out, or a scheduled date) the game asks for the present to bring. The header bar and the card's purchase line are both built in `code.bin`, not drawn from TRB text keys. The header is the UTF-8 literal 「持っていくプレゼントを選んでください」 at file `0x68be8` (54 bytes + 2 NUL, `add r2, pc` @ `0x68b74`). The purchase line is `snprintf(buf, 0x20, "%d%s%d%s %s", month, 月, day, 日, 購入)` @ `0x688bc`; the three words come from `FUN_005c0d4c(0x9400, 0/1/2, 1)`, so English printed `11Month21 Day(s) Bought`. `src/patch_present_card.py` (name-input step 27) writes "Choose a present to bring" into the header slot, rewrites the six argument-setup words @ `0x6889c` to pass `(購入, month, day)`, and puts `"%s %d/%d"` in the 12-byte format slot @ `0x68980`: **Bought 11/21**. Rig-verified (`work/review_images/present_picker_en.png`).
+
 **Save dates MM/DD/YYYY (2026-10-27)**
 
 Data select **Last Saved** is not a `%4d/…` format. File `0x00057940` sprintf's `"%d%s%d%s%d"` into the slot buffer at `+0xf0` with year, TRB `0x100` slot `0xd` (`/`), month, `/`, day, so it reads `2026/7/23` (no padding). The day / month / year getters are `0x733280` / `0x733428` / `0x7333d0`. `patch_save_slot_date.py` only reorders the stacked args to month, `/`, day, `/`, year, so the result is `7/23/2026`. `0x0005f3a8` is the same `%d%s%d%s%d` date and gets the same swap.
@@ -1204,6 +1208,7 @@ Budget after lossless zopfli of Konami (~2875) + ProductionLogo (~8021) + 16×16
 | `src/dialog_wrap.py` | At script inject: swap glyphs the dialog font lacks, then break English lines at spaces before the game's 30/28-column wrapper cuts a word (**§24.1–24.2**) |
 | `src/patch_bonus_digits.py` | BONUS! popup Riches amounts in ASCII digits (name-input step 25, **§24.8**) |
 | `src/patch_profile_caret.py` | Profile name caret sits after the centered text: `center + 3.5 × (cells + 2)` (name-input step 26, **§17.10**) |
+| `src/patch_present_card.py` | Date present picker: header 「持っていくプレゼントを選んでください」 (code.bin UTF-8 @ `0x68be8`) → "Choose a present to bring"; card purchase line `"%d%s%d%s %s"` @ `0x68980` (month 月 day 日 購入, "11Month21 Day(s) Bought") → `"%s %d/%d"` with the args @ `0x6889c` reordered: "Bought 11/21". In place, shared 月/日 untouched (name-input step 27) |
 | `tools/translate_heroines_gemini.py fix-pronoun` / `fix-address` | Redo Gemini lines that kept `●` or name the heroine where English says "you" (**§24.3–24.4**) |
 | `tools/deploy_msel_options_en.py` | Options + clock-title A8 → exact zlib pkg **5245** (splice into **live** MOD) |
 | `tools/deploy_optionpassword_en.py` | Password window `パスワード` → `Password` ETC1A4 `Pass_Win01` @ **5251** |

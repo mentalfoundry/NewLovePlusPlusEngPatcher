@@ -1,6 +1,6 @@
 {
  "vanilla_sha256": "a83d349d0a000a127f93f743c038921903a2aae111b4b9005aadd446324ab890",
- "final_sha256": "0593461d2705204ac03a36473f5c186e8e2208da4140f8fa4282c121f9f73ffa",
+ "final_sha256": "15ac1715be7d8a85c4badb0bee25dcaa9a53fdb81064d1ed198420ffdf659867",
  "steps": [
   {
    "name": "apply_name_pane_patches",
@@ -541,6 +541,16 @@
     "0x24833c-0x248370",
     "0x248388-0x24838c",
     "0x2484d0-0x2484e4"
+   ]
+  },
+  {
+   "name": "apply_present_card",
+   "written_sha256": "1ec51baf2893de3e7e7af47e6010c9364af99ebdbf884fd3e4e7718059d8ff94",
+   "ranges": [
+    "0x06889c-0x0688ac",
+    "0x0688b0-0x0688b4",
+    "0x068980-0x06898c",
+    "0x068be8-0x068c20"
    ]
   }
  ]

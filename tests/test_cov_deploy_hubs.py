@@ -1904,6 +1904,7 @@ _ALREADY = (
     "syspopup_scroll_already",
     "bonus_digits_already",
     "profile_caret_already",
+    "present_card_already",
 )
 _APPLIES = (
     "apply_pane_nullguard",
@@ -1940,6 +1941,7 @@ _APPLIES = (
     "apply_syspopup_scroll",
     "apply_bonus_digits",
     "apply_profile_caret",
+    "apply_present_card",
 )
 
 
@@ -1992,7 +1994,7 @@ def test_name_input_stack_branches(monkeypatch):
     _stub_stack(monkeypatch, already=True)
     assert name_input.apply_name_input_stack(_name_buf(True)) == 2
     _stub_stack(monkeypatch, already=False)
-    assert name_input.apply_name_input_stack(_name_buf(False)) == 36
+    assert name_input.apply_name_input_stack(_name_buf(False)) == 37
     _stub_stack(monkeypatch, already=False, romaji_ok=False)
     with pytest.raises(SystemExit, match="romaji patch failed"):
         name_input.apply_name_input_stack(_name_buf(False))

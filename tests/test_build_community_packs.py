@@ -339,3 +339,18 @@ def test_every_shipped_nlp_line_traces_to_reviewed_english():
                         elif want.get(canon(got)) not in (raw[pi], b[pi]):
                             bad.append(f"{pack}/{stem}[{pi_e}.{pi}]: pack-only {raw[pi]!r} shows {got!r}")
     assert not bad, f"{len(bad)} NLP lines without reviewed English, e.g.\n" + "\n".join(bad[:15])
+
+
+def test_main_reports_a_registry_stem_it_cannot_map(tmp_path, monkeypatch, capsys):
+    dbin, vanilla = _tree(tmp_path)
+    monkeypatch.setattr(script_inject, "community_stems", lambda: set())
+    contrib = tmp_path / "contrib"
+    contrib.mkdir()
+    (contrib / cp.PACK_ONLY_FILE.name).write_text('{"t001": {"lines": {"追加": "Extra"}}}', encoding="utf-8")
+    (dbin / "script" / "t001.dbin2").write_bytes(script(EN))
+    (vanilla / "NLP_01" / "t001.dbin2").write_bytes(script([["別の文です", "うん"], ["またね"]]))
+    args = ["--dbin", str(dbin), "--vanilla-bin", str(vanilla), "--contrib", str(contrib), "--check"]
+    assert cp.main(args) == 0
+    out = capsys.readouterr().out
+    assert "[pack-only stems] can write 0 pack file(s)" in out
+    assert "skipped NLP_01/t001: entry 0: no English for pack line '別の文です'" in out
