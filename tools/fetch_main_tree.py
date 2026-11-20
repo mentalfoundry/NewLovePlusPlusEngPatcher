@@ -41,7 +41,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 STAMP_NAME = ".nlpp_main_sha"
 MANIFEST_NAME = ".nlpp_main_files"
-DEFAULT_SOURCE_REPO = "czyrustuazon/NewLovePlusPlusEngPatcher"
+DEFAULT_SOURCE_REPO = "mentalfoundry/NewLovePlusPlusEngPatcher"  # this fork, not upstream
 DEFAULT_REF = "main"
 
 # Top-level names we never replace from the zipball.

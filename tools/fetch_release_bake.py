@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Download gold bake, name-input code.bin, and romfs_overlay from GitHub Releases.
 
-Gold Releases are published from the public **nlpp-gold-maker** repo (not this
-EngPatcher remote). The default is ``czyrustuazon/nlpp-gold-maker``. Override
-with ``--repo`` or ``NLPP_GITHUB_REPO``. The rolling bake from EngPatcher
-``main`` is Release tag ``gold``.
+Gold Releases are published from an **nlpp-gold-maker** repo (not this
+EngPatcher remote). This fork (mentalfoundry) publishes none, and the upstream
+``czyrustuazon/nlpp-gold-maker`` bake is built from upstream ``main``, so it
+would replace this fork's menus and images: there is no default repo, and
+Drop builds the bake locally. Name one with ``--repo`` or ``NLPP_GITHUB_REPO``.
+The rolling bake is Release tag ``gold``.
 
 The Release body records ``engpatcher_sha:``. When this tree was synced from
 ``main`` (``.nlpp_main_sha``), a gold bake from any other commit is refused so
@@ -13,7 +15,7 @@ checkout has no stamp and skips the check.
 
 Examples:
   python tools/fetch_release_bake.py --tag gold
-  python tools/fetch_release_bake.py --repo czyrustuazon/nlpp-gold-maker --tag latest
+  python tools/fetch_release_bake.py --repo OWNER/nlpp-gold-maker --tag latest
   python tools/fetch_release_bake.py --tag gold --force
 """
 from __future__ import annotations
@@ -35,14 +37,14 @@ MAIN_SHA_STAMP = ROOT / ".nlpp_main_sha"
 _ENGPATCHER_SHA_RE = re.compile(r"^engpatcher_sha:\s*([0-9a-fA-F]{7,40})\s*$", re.M)
 # Public gold-bake Releases. A zip of EngPatcher has no git remote, so Drop
 # cannot infer this from origin. Env / --repo still override it.
-DEFAULT_GOLD_REPO = "czyrustuazon/nlpp-gold-maker"
+DEFAULT_GOLD_REPO = ""  # this fork publishes no gold bake; see the module docstring
 
 
 def _default_gold_repo() -> str:
-    """Public nlpp-gold-maker Release repo.
+    """nlpp-gold-maker Release repo, or "" (build locally).
 
-    ``NLPP_GITHUB_REPO`` / ``NLPP_GOLD_REPO`` override the baked-in repo.
-    A git remote is not required (zip downloads have none).
+    ``NLPP_GITHUB_REPO`` / ``NLPP_GOLD_REPO`` name one. A git remote is not
+    required (zip downloads have none).
     """
     for key in ("NLPP_GITHUB_REPO", "NLPP_GOLD_REPO"):
         val = os.environ.get(key, "").strip()
@@ -159,7 +161,7 @@ def try_fetch_gold(
         return True, f"already present: {bake}"
 
     if not repo:
-        return False, "no gold repo (set NLPP_GITHUB_REPO or clone from GitHub)"
+        return False, "no gold repo (this fork publishes none; set NLPP_GITHUB_REPO to use one)"
 
     if not github_reachable():
         return False, "no internet (github.com:443 unreachable); build the bake locally"
@@ -235,7 +237,7 @@ def main(argv: list[str] | None = None) -> int:
         default=_default_gold_repo(),
         help=(
             "OWNER/nlpp-gold-maker "
-            f"(default: {DEFAULT_GOLD_REPO}, or NLPP_GITHUB_REPO)"
+            "(default: none, build locally; or NLPP_GITHUB_REPO)"
         ),
     )
     ap.add_argument(

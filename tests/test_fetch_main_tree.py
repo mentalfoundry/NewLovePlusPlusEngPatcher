@@ -48,7 +48,7 @@ def test_default_source_repo_from_env(monkeypatch):
 def test_default_source_repo_public(monkeypatch):
     monkeypatch.delenv("NLPP_SOURCE_REPO", raising=False)
     monkeypatch.delenv("NLPP_ENG_PATCHER_REPO", raising=False)
-    assert fetch_mod._default_source_repo() == "czyrustuazon/NewLovePlusPlusEngPatcher"
+    assert fetch_mod._default_source_repo() == "mentalfoundry/NewLovePlusPlusEngPatcher"  # this fork
 
 
 def test_skips_git_checkout(patcher_root: Path, monkeypatch):

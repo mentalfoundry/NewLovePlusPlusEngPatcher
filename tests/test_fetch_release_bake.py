@@ -29,13 +29,14 @@ def test_default_gold_repo_from_env(monkeypatch):
     assert fetch_mod._default_gold_repo() == "acme/nlpp-gold"
 
 
-def test_default_gold_repo_is_public_without_git(tmp_path, monkeypatch):
-    """Zip downloads have no origin. The public gold repo is still the default."""
+def test_fork_has_no_default_gold_repo(tmp_path, monkeypatch):
+    """The upstream bake is built from upstream main and would replace this
+    fork's menus and images, so nothing is fetched unless a repo is named."""
     monkeypatch.delenv("NLPP_GITHUB_REPO", raising=False)
     monkeypatch.delenv("NLPP_GOLD_REPO", raising=False)
     with patch.object(fetch_mod, "ROOT", tmp_path):
-        assert fetch_mod._default_gold_repo() == "czyrustuazon/nlpp-gold-maker"
-        assert fetch_mod.DEFAULT_GOLD_REPO == "czyrustuazon/nlpp-gold-maker"
+        assert fetch_mod._default_gold_repo() == ""
+        assert fetch_mod.DEFAULT_GOLD_REPO == ""
 
 
 def test_github_asset_urls_requires_both_assets():

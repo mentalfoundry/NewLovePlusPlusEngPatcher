@@ -55,9 +55,11 @@ function Get-SafeRomPath([string]$path) {
 $outDir = Join-Path $root "out"
 $logPath = Join-Path $outDir "log.txt"
 $ciaOut = Join-Path $outDir "NewLovePlusPlus-EN.cia"
-# The bat only asks the gold-bake question in a git checkout; release zips
-# always download the gold bake.
+# This fork publishes no gold bake (the upstream one would replace its menus
+# and images), so the bat builds locally unless NLPP_GITHUB_REPO /
+# NLPP_GOLD_REPO names one. Only then is there a download to toggle.
 $isCheckout = Test-Path -LiteralPath (Join-Path $root ".git")
+$showGold = $isCheckout -and [bool]($env:NLPP_GITHUB_REPO -or $env:NLPP_GOLD_REPO)
 
 $uiCode = @'
 using System;
@@ -523,7 +525,7 @@ $drop.Controls.Add($browse)
 
 # --- Zone 2: options ----------------------------------------------------
 $rowH = 36
-$rows = $(if ($isCheckout) { 2 } else { 1 })
+$rows = $(if ($showGold) { 2 } else { 1 })
 $optH = 36 + ($rows * $rowH) + 14
 
 $optBox = New-Object NlppUi.OptionsCard
@@ -548,7 +550,7 @@ $tips.SetToolTip($gemini, $tips.GetToolTip($geminiText))
 $optBox.Controls.Add($geminiText)
 $optBox.Controls.Add($gemini)
 
-if ($isCheckout) {
+if ($showGold) {
     $goldText = New-Object System.Windows.Forms.Label
     $goldText.Text = "Download the gold bake from GitHub (fast; leaves out local edits)"
     $goldText.Font = New-Object System.Drawing.Font($bodyFamily, 9.5)
@@ -656,7 +658,7 @@ $onDragDrop = {
 }
 # Child controls swallow drags, so every surface takes the drop.
 $dropTargets = @($form, $label, $hint, $drop, $field, $pathBox, $optBox, $geminiText, $gemini, $backup, $clock, $status)
-if ($isCheckout) {
+if ($showGold) {
     $dropTargets += @($goldText, $gold)
 }
 foreach ($c in $dropTargets) {
@@ -712,7 +714,7 @@ $go.Add_Click({
     # The bat skips its console questions when these are preset.
     $env:NLPP_BACKUP_CONFIRMED = "1"
     $env:NLPP_INCLUDE_GEMINI_NENE = $(if ($gemini.Checked) { "1" } else { "0" })
-    if ($isCheckout) {
+    if ($showGold) {
         $env:NLPP_SKIP_GOLD_FETCH = $(if ($gold.Checked) { "0" } else { "1" })
     }
     $launchPath = Get-SafeRomPath $script:ciaPath

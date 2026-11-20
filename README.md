@@ -1,14 +1,16 @@
 # New Love Plus+ English Patch (2026)
 
-> **About this fork.** This is my best attempt at a comprehensive New Love Plus+ translation. It is a fork of [czyrustuazon/NewLovePlusPlusEngPatcher](https://github.com/czyrustuazon/NewLovePlusPlusEngPatcher), with the scripts reviewed and edited line by line against the Japanese by Claude Opus 5.5, plus a set of additional translation and display fixes:
+> **About this fork.** This is my best attempt at a comprehensive New Love Plus+ translation. It is a fork of [czyrustuazon/NewLovePlusPlusEngPatcher](https://github.com/czyrustuazon/NewLovePlusPlusEngPatcher). Every piece of text the game shows was reviewed against the Japanese by Claude Opus 5.5 and checked in a test emulator. As of **v1.1.0** (CIA title version 10):
 >
-> - Every Rinko, Manaka and Nene script and all 55 shared scripts reviewed and corrected.
-> - Consistent place names and currency ("Riches") across the scripts and system text.
-> - Popups that no longer overflow their boxes, and lines that fit the 30-column text box.
-> - The quit-without-saving voice checks prompt the Japanese phrase in romaji, with its English meaning. Speaking the romaji as printed is accepted in-game.
-> - The trip date-picker message and the outing SET icon translated.
+> - **All dialogue.** Every Rinko, Manaka and Nene script and all 55 shared scripts reviewed and corrected line by line, in all three copies of the scripts the game chooses between (`script`, `NLP_01`, `NLP_02`). A default build has **no Japanese dialogue left**: 509,148 lines, none in Japanese apart from `・` pause dots.
+> - **All phone messages.** The 1,822 text messages from the three heroines, plus the word lists that fill their blanks (season, weather, food, ...), reviewed and shipped in every build.
+> - **System text.** 25,399 / 25,412 UI strings in English. The 13 left are single kanji that a reading quiz asks you to read.
+> - **Menus and pictures.** 1,780 English UI images, including the tutorials, magazine titles, shop signs, the photo contest, Profile labels and the date present picker.
+> - **Fixes.** Consistent place names and currency ("Riches"); popups that fit their boxes and lines that fit the 30-column text box; US date order; the quit-without-saving voice checks prompt the Japanese phrase in romaji with its English meaning (speaking the romaji as printed is accepted).
 >
-> It should be a solid, complete, playable experience in its own right. The review hasn't been human-proofread yet, so please report anything that reads wrong. For the original project, its contributors and its own releases, see the [original repository](https://github.com/czyrustuazon/NewLovePlusPlusEngPatcher).
+> Japanese on purpose: the Love Plus mode voice-hint bubbles are romaji (see [Known issues](#known-issues)), quiz questions quote the Japanese they ask about, the name-entry keyboard keeps its kanji, and the game's logos stay as they are.
+>
+> It should be a solid, complete, playable experience in its own right. The review hasn't been human-proofread yet, so please report anything that reads wrong. To build it, follow [Quick start](#quick-start-drag-and-drop): every build packs this fork's menus and text locally. For the original project, its contributors and its own releases, see the [original repository](https://github.com/czyrustuazon/NewLovePlusPlusEngPatcher).
 
 One-click English patcher for **New Love Plus+** (New Love Plus Plus) on the Nintendo 3DS. This is the current patch. The 2017 [NLPPATCH](https://github.com/LovePlusProject/NLPPATCH) repo is the old 28% release, not this build.
 
@@ -27,11 +29,11 @@ Drop in a **decrypted** dump (`.cia` or `.3ds` / `.cci`) and it will:
 1. **Verify** the dump (SHA-1) before touching anything  
 2. **Wipe `out/`, `release/`, and `cache/`** completely, then recreate them empty. That deletes the previous CIA, logs, `out/extdata_backup/`, gold bake, TRB overlay, name-input `code.bin`, the vanilla RomFS extract, and the PNG pack cache. The A/B Azahar copies in `ab_test/azahar_instances/` are left in place. `python src/patch_cia.py` on its own does not do this wipe  
 3. **Reject encrypted dumps** — decrypt yourself first (GodMode9, Batch CIA 3DS Decryptor, etc.)  
-4. **Inject English scripts** — layered: contributor reviews in `assets/script_contrib/` (always, when present), Manaka `t*` + common `p*` from `rebuild_dbin2/`, plus community ~28% Rinko/Nene stems (ex-NLPPATCH, also in `rebuild_dbin2/script/`; see `assets/nlppatch/`) via `src/script_inject.py`. After the gold-bake question, Drop asks **Include Gemini Nene, Rinko, and SMS?** The default is no, which keeps the community Nene and Rinko layer and Japanese phone messages. Answering yes sets `NLPP_INCLUDE_GEMINI_NENE=1` and injects the unreviewed machine pass for both routes, plus SMS, from `assets/gemini_heroines/`. A contributor file for a stem wins over that Gemini copy.  
+4. **Inject English scripts** — layered by `src/script_inject.py`: reviewed contributor files in `assets/script_contrib/` first (every Nene and Rinko script, mirrored onto `NLP_01` / `NLP_02` by `tools/build_community_packs.py`), then Manaka `t*` + common `p*` from `rebuild_dbin2/`, then the ex-NLPPATCH community stems. Drop asks **Include Gemini Nene, Rinko, and SMS?** Answer **no** (the default): reviewed English already covers every line, and a reviewed file always wins. Yes (`NLPP_INCLUDE_GEMINI_NENE=1`) only lets the unreviewed machine pass in `assets/gemini_heroines/` fill a script or message set with no reviewed file, and none is left.  
 
 5. **English heroine names** — rewrite dialog tokens (`▲高嶺＊＊▲` → `Takane`, etc.) and patch UI name tables in `textresource_resident_jpn.trb` / `img.bin`  
 6. **Inject Profile name-input `code.bin`** from `release/name_input_code.bin` when present (romaji keyboard, Called-name list, Message Speed, US date order, AM/PM on the home clock, title-loop guard, My Camera Restore Default, Communication Settings StreetPass). Older single-pane `--patch-code` is still available and is **not** this stack  
-7. **Inject gold UI** from `release/bake_img.bin` when present (PNG pack + menu chrome + English mini-game screens + CESA + day-counter). Phone-message bodies in that bake stay Japanese. The Gemini yes above splices English SMS into a copy of `img.bin` instead of replacing the published bake.  
+7. **Inject gold UI** from `release/bake_img.bin` (PNG pack + menu chrome + English mini-game screens + CESA + day-counter), built locally from this fork. The bake file keeps Japanese phone messages; the reviewed English ones in `assets/sms_contrib/` are spliced into a copy of `img.bin` at CIA time (`patch_cia._apply_sms`).  
 8. **Apply TRB overlay** from `release/romfs_overlay/` when present  
 9. **Rebuild** a decrypted **CIA** for FBI / Azahar / Citra (even when the input was `.3ds`) at `out/NewLovePlusPlus-EN.cia`. A Luma LayeredFS folder is **not** built (see [LayeredFS does not work on hardware](#layeredfs-does-not-work-on-hardware))
 10. **Clean** `out/` to the CIA + `log.txt` (SpotPass Watcher #28 is baked into `code.bin`)
@@ -67,27 +69,40 @@ The git repo still does not contain a dump. You bring your own decrypted CIA or 
 
 ## Quick start (drag and drop)
 
-1. Double-click **`Drop CIA or 3DS Here to Patch.bat`**
-2. Drop your **decrypted** `.cia` / `.3ds` / `.cci` on the window (or use Browse → Patch)  
-   — or drag the file directly onto the `.bat`
+These steps build a CIA with everything in this fork.
 
-Drop CIA **deletes `out/`, `release/`, and `cache/` completely** before it starts. A previous bake, CIA, log, Azahar copy under `out/`, extra-data backup, or pack cache in those folders is removed. It then downloads the published gold bake from GitHub; with that Release available a Drop takes a few minutes. If the Release is missing or GitHub cannot be reached, it packs the bake locally from `assets/`, which takes roughly **40 minutes to 2 hours** depending on hardware (see [Gold bake](#gold-bake-every-drop-cia)).
+1. **Get this fork.** `git clone https://github.com/mentalfoundry/NewLovePlusPlusEngPatcher`, or **Code → Download ZIP** on GitHub. Both work.
+2. **Decrypt your dump yourself** (see [Required dump](#required-dump)).
+3. **Back up your save and extra data** (Checkpoint or JKSM on 3DS; `python tools\restore_azahar_extdata.py backup` on Azahar).
+4. Double-click **`Drop CIA or 3DS Here to Patch.bat`** and drop your **decrypted** `.cia` / `.3ds` / `.cci` on the window (or use Browse → Patch, or drag the file onto the `.bat`).
+5. Answer its questions:
+
+   | Question | Answer |
+   |----------|--------|
+   | Have you backed up your New Love Plus+ save and extdata? | **y**, once you have |
+   | Continue patching anyway? (only when your dump's SHA-1 is not on the known list) | **y** if it is a decrypted New Love Plus+ dump; the known dumps skip this |
+   | Include Gemini Nene, Rinko, and SMS? | **N** (the default). Reviewed English already covers every line |
+
+6. **Wait.** Drop deletes `out/`, `release/` and `cache/` (a previous CIA, log, bake or extra-data backup in them is removed), packs the English menus and text from this fork, then builds the CIA. Expect roughly **40 minutes to 2 hours** depending on hardware (see [Gold bake](#gold-bake-every-drop-cia)).
+7. **Check `out/log.txt`.** Its PATCH SUMMARY should show `[OK] CIA title version: 10 (v1.1.0 ...)`, `[OK] Phone messages (SMS): English` and `[OK] UI img.bin (menus / chrome): gold bake + English SMS`.
+8. **Install `out/NewLovePlusPlus-EN.cia`** over the existing game with FBI (do not delete the game first, that orphans its extra data), or open it in Azahar / Citra.
+
+For an unattended run, set `NLPP_BACKUP_CONFIRMED=1` and `NLPP_INCLUDE_GEMINI_NENE=0` before starting the bat. The SHA-1 question still appears for a dump that is not on the known list.
+
+**Why nothing is downloaded.** This fork publishes no gold bake, and the upstream one (`czyrustuazon/nlpp-gold-maker`) is built from upstream `main`: it would put the original project's menus and images into your CIA. So Drop always packs the bake from this tree. A ZIP copy (no `.git`) first refreshes its sources from **this fork's** `main` (`mentalfoundry/NewLovePlusPlusEngPatcher`), which resets files you edited there; set `NLPP_SKIP_SOURCE_FETCH=1` to keep them. Set `NLPP_GITHUB_REPO=owner/repo` only to use a bake you published from this fork.
 
 ### Sharing a build (skip the cold PNG pack)
 
 `release/bake_img.bin` is **gitignored** (too large for GitHub). Assets under `assets/` **are** in the repo.
 
-**Preferred:** push/merge to EngPatcher **`main`** → **nlpp-gold-maker** Ubuntu runner
-builds `release/` and updates GitHub Release tag `gold`. See
-[`infra/README.md`](infra/README.md). Collaborators:
+This fork publishes no GitHub gold bake (the upstream **nlpp-gold-maker** runner in [`infra/README.md`](infra/README.md) builds from upstream `main`). If you run your own runner from this fork, collaborators can fetch its bake with:
 
 ```bash
+set NLPP_GITHUB_REPO=your-owner/nlpp-gold-maker
 python tools/fetch_release_bake.py --tag gold
-# default repo: czyrustuazon/nlpp-gold-maker
-# or: set NLPP_GITHUB_REPO=other-owner/nlpp-gold-maker
 ```
 
-Manual handoff still works:
+Manual handoff:
 
 1. Clone / zip this repo (includes `assets/`, scripts, tools).  
 2. Also give them your finished **`release/`** pack:
@@ -122,7 +137,7 @@ Use **564** (chrome) or **1765** (all mapped UI masters) from the table above. `
 
 ### Gold bake (every Drop CIA)
 
-**Drop CIA wipes `out/`, `release/`, and `cache/` first,** then downloads the published GitHub gold bake. If that Release is missing or GitHub cannot be reached, it packs from this tree and re-extracts a full RomFS (`Plus/` included) from the dropped ROM. `PATCHER_RELEASE` is **`v1.1.0`** on this fork. `CIA_TITLE_VERSION` is **10**. `NLPP_USE_PACK_CACHE` does not survive that wipe. `set NLPP_SKIP_GOLD_FETCH=1` skips the download and packs locally. `set NLPP_REUSE_BAKE=1` skips the stamp check on a leftover local bake. `rebuild_bake_img.py --skip-pack` does **not** refresh the PNG fingerprint when PNGs changed, and it does not wipe `out/`, `release/`, or `cache/`.
+**Drop CIA wipes `out/`, `release/`, and `cache/` first,** then packs the bake from this tree and re-extracts a full RomFS (`Plus/` included) from the dropped ROM. On this fork nothing is downloaded unless `NLPP_GITHUB_REPO` / `NLPP_GOLD_REPO` names a gold repo. `PATCHER_RELEASE` is **`v1.1.0`** on this fork. `CIA_TITLE_VERSION` is **10**. `NLPP_USE_PACK_CACHE` does not survive that wipe. `set NLPP_SKIP_GOLD_FETCH=1` skips the download and packs locally. `set NLPP_REUSE_BAKE=1` skips the stamp check on a leftover local bake. `rebuild_bake_img.py --skip-pack` does **not** refresh the PNG fingerprint when PNGs changed, and it does not wipe `out/`, `release/`, or `cache/`.
 
 The drop bat then runs:
 
@@ -152,7 +167,7 @@ d138d92fd9d522827cb9665bc2c954f1e8ba1f92  # decrypted full .3ds
 6428e72eefec31d19282d2c7f0cb5082723a3206  # encrypted trim .3ds (decrypt first)
 ```
 
-Many other decrypted CIAs will fail the hash check (by design). Use `--expect-sha1 <hash>` to require one specific dump, or `--skip-hash` to bypass (not recommended).
+Other decrypted dumps are not on that list. Drop then asks **Continue patching anyway?**; answer **y** for a decrypted New Love Plus+ dump. With `patch_cia.py` directly, use `--expect-sha1 <hash>` to require one specific dump, or `--skip-hash` to bypass (not recommended).
 
 ### Requirements
 
@@ -323,7 +338,7 @@ python src/patch_cia.py --cia "C:\path\to\00040000000F4E00_v00.3ds" --out "out/N
 - **Gold path:** `python tools/rebuild_bake_img.py` → `release/bake_img.bin` (+ `release/name_input_code.bin`)  
   PNG pack + main TRB from `assets/textresource/translations.json` + ordered `deploy_*` chrome (Options / menus / Confirm / softkeys / multiwin / gallery / UI buttons / keyboard tabs / Title / CESA / …) + SMS + day-counter + overlay + Profile name-input `code.bin`.  
 - No sibling dump needed: pass `--rom game.cia|.3ds|.cci` (drop-bat does this automatically).  
-- Drop-bat **downloads the published gold bake** first. It runs a full local rebuild only when that Release is missing or unreachable (or `NLPP_SKIP_GOLD_FETCH=1`), then patches the CIA.  
+- Drop-bat **rebuilds the bake locally** on this fork (it publishes none), then patches the CIA. With `NLPP_GITHUB_REPO` set it polls that Release first.  
 - Drop-bat / `patch_cia.py` **prefer `release/bake_img.bin`** when present; inject `release/name_input_code.bin` when present.  
 - **Cold PNG pack** is CPU-bound exact-zlib (see `docs/technical.md` §12.5.3): empty-block-first + `--pkg-workers` + zopfli empty-block pad. Watch live ``[timer]`` elapsed / heartbeat lines. Expect roughly **40 minutes to 2 hours** depending on hardware (historically ~16h sequential zopfli). Warm `cache/img_pack/` re-packs take minutes, but only for manual `rebuild_bake_img.py` runs: Drop CIA deletes `cache/` first, so its local packs are always cold.  
 - Resume deploys only: `python tools/rebuild_bake_img.py --skip-pack`.  
@@ -371,9 +386,9 @@ New work on **this** patcher. Not the 2016–17 NLPPATCH / tooling lineage in th
 | **i need help here...** | Knowledge sharing |
 | **( ˘ ᵕ˘(˘ᵕ ˘ )** | Shared save files that unlocked quicker access to post-game context |
 
-**Nene / Rinko coverage (2026-10-23):** the reviewed community layer is still **48 / 174** scripts each (**27.6%**), the early-story NLPPATCH files. A Gemini machine pass now covers every other script that has dialogue, **146 / 174 (83.9%)** per route. The other **28** files on each route are empty retail stubs with no lines. The fansite dialogue bar draws those **56** files as their own segment, so the bar fills to **100%**. **522 / 578 (90.3%)** is the count of files that actually contain lines. Spoken text plus phone messages is **2,344 / 2,400 (97.7%)** entries that contain text. The same **56** empty script files are the stone segment on that bar, so it fills to **100%** as well. Phone messages for all three heroines are translated in `assets/gemini_heroines/sms/` (**1822 / 1822**, unreviewed). Drop asks **Include Gemini Nene, Rinko, and SMS?** The default is no, so a default CIA keeps the community layer and Japanese SMS. Answering yes injects both machine passes, including post-game (`a900`, `a912`, `a970`, `a999`, `k912`, `k970`, `k999`, and the rest), and splices those messages into a copy of `img.bin`. The published gold bake stays Japanese. `--include-sms` is the older maintainer path.
+**Coverage on this fork (2026-11-20, `tools/export_progress_metrics.py`):** every script with dialogue is English, **522 / 578** files. The other **56** (28 per Nene / Rinko route) are empty retail stubs with no lines, so the fansite bar draws them as their own segment and fills to **100%**. Nene and Rinko are fully reviewed (`assets/script_contrib/`), post-game included, in all three script packs; on 2026-10-23 it was 48 / 174 reviewed per route plus an unreviewed Gemini pass. Phone messages are **1,822 / 1,822**, reviewed (`assets/sms_contrib/`) and shipped by default. Spoken text plus phone messages is **2,344 / 2,400** entries with text, the same 56 stubs making up the rest.
 
-**System text (2026-10-23):** `textresource_jpn.trb` is **25,333 / 25,346 (99.9%)**. The last **13** slots stay Japanese on purpose. They are single kanji a study quiz asks you to read (`胤`, `欧`, `戟`, `原`, `哉`, `諏`, `成`, `替`, `鉄`, `乍`, `蜂`, `憂`, `梨`). An English quiz prompt that quotes a Japanese word keeps that quotation. The player-name token, the middle dot `・`, and the long-vowel mark `ー` are already English, so the counter skips them.
+**System text (2026-11-20):** `textresource_jpn.trb` is **25,399 / 25,412 (99.9%)**. The last **13** slots stay Japanese on purpose. They are single kanji a study quiz asks you to read (`胤`, `欧`, `戟`, `原`, `哉`, `諏`, `成`, `替`, `鉄`, `乍`, `蜂`, `憂`, `梨`). An English quiz prompt that quotes a Japanese word keeps that quotation. The player-name token, the middle dot `・`, and the long-vowel mark `ー` are already English, so the counter skips them.
 
 ### CIA / RomFS tooling
 
@@ -458,7 +473,9 @@ tools/
   nlpp-tools/                vendored img.bin helpers (kiwiz/nlpp-tools)
   cia/                       3dstool / ctrtool / makerom / seeddb (see CREDITS.md)
 rebuild_dbin2/               finished English .dbin2 scripts
-assets/gemini_heroines/      optional Gemini Nene, Rinko, and SMS (Drop asks; default no; NLPP_INCLUDE_GEMINI_NENE=1)
+assets/script_contrib/       reviewed Nene / Rinko / shared dialogue (wins over every other layer)
+assets/sms_contrib/          reviewed phone messages + worddic (shipped in every build)
+assets/gemini_heroines/      unreviewed Gemini Nene, Rinko, and SMS (Drop asks; answer no; NLPP_INCLUDE_GEMINI_NENE=1)
 release/                     gold bake + TRB overlay; Drop CIA deletes this folder before each build (binaries gitignored; docs/technical.md §15.5)
 cache/                       PNG scratch + vanilla_from_rom (gitignored; Drop CIA deletes this folder on every from-scratch build)
 out/                         Drop CIA deletes this folder before each build; the run then writes the CIA and log.txt (gitignored)
@@ -577,4 +594,4 @@ python src/patcher.py build --clean
 - A dump of the game — you must supply your own matching **decrypted** CIA / `.3ds`.  
 - A ROM decryptor — decrypt outside this tool, then drop the clear dump.  
 - An on-console retail re-encryptor.  
-- A gold bake **in this git repo** — `release/bake_img.bin` is gitignored. Fetch from **nlpp-gold-maker** Release tag `gold` (`tools/fetch_release_bake.py`) or rebuild locally.
+- A gold bake **in this git repo** — `release/bake_img.bin` is gitignored. Drop builds it locally from this fork (or fetches one you published, with `NLPP_GITHUB_REPO`).

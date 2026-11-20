@@ -255,6 +255,12 @@ if "!HASH_ERR!"=="0" (
   set "SKIP_HASH=--skip-hash"
 )
 
+REM This fork (mentalfoundry) publishes no gold bake, and the upstream one
+REM (czyrustuazon/nlpp-gold-maker) is built from upstream main, so it would
+REM replace this fork's menus and images. Build locally unless a gold repo
+REM is named with NLPP_GITHUB_REPO / NLPP_GOLD_REPO.
+if not defined NLPP_SKIP_GOLD_FETCH if not defined NLPP_GITHUB_REPO if not defined NLPP_GOLD_REPO set "NLPP_SKIP_GOLD_FETCH=1"
+
 REM Git checkout: the published gold bake is built from main, so local edits to
 REM baked inputs (name-input patches, UI PNGs, TRB) would not reach the CIA.
 REM Ask before the wipe so the long build runs unattended. Any preset
@@ -397,7 +403,7 @@ if /i "%NLPP_REPACK_IMAGES%"=="1" (
   if /i not "%NLPP_SKIP_GOLD_FETCH%"=="1" (
     echo.
     "%PYTHON%" -c "import sys; sys.path.insert(0, sys.argv[1]); from live_status import enable_vt, paint; enable_vt(); print(paint(sys.argv[2], '1;95'), flush=True)" "%SRC%" "Polling GitHub Release tag gold..."
-    "%PYTHON%" -c "import sys; sys.path.insert(0, sys.argv[1]); from live_status import enable_vt, paint; enable_vt(); print(paint(sys.argv[2], '1;95'), flush=True)" "%SRC%" "czyrustuazon/nlpp-gold-maker (set NLPP_GITHUB_REPO to override)"
+    "%PYTHON%" -c "import sys; sys.path.insert(0, sys.argv[1]); from live_status import enable_vt, paint; enable_vt(); print(paint(sys.argv[2], '1;95'), flush=True)" "%SRC%" "%NLPP_GITHUB_REPO%%NLPP_GOLD_REPO%"
     echo.
     "%PYTHON%" "%~dp0tools\fetch_release_bake.py" --best-effort
     if errorlevel 1 (

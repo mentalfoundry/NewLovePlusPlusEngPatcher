@@ -233,3 +233,14 @@ def test_bat_asks_for_save_backup_before_any_work():
     assert 'if /i not "%NLPP_BACKUP_CONFIRMED%"=="1"' in text
     cancel_idx = text.index("[cancelled] Back up your save and extdata first")
     assert ask_idx < cancel_idx < text.index("setup_tools.py")
+
+
+def test_fork_builds_the_bake_locally_unless_a_gold_repo_is_named():
+    """No published bake for this fork: preset NLPP_SKIP_GOLD_FETCH before the
+    checkout question and the poll, unless NLPP_GITHUB_REPO / NLPP_GOLD_REPO is set."""
+    text = _bat_text()
+    preset = 'if not defined NLPP_SKIP_GOLD_FETCH if not defined NLPP_GITHUB_REPO if not defined NLPP_GOLD_REPO set "NLPP_SKIP_GOLD_FETCH=1"'
+    assert preset in text
+    assert text.index(preset) < text.index("Skip the gold download and build from this checkout?")
+    assert text.index(preset) < text.index("fetch_release_bake.py")
+    assert "czyrustuazon/nlpp-gold-maker (set NLPP_GITHUB_REPO" not in text
