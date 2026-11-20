@@ -1209,6 +1209,7 @@ Budget after lossless zopfli of Konami (~2875) + ProductionLogo (~8021) + 16×16
 | `src/patch_bonus_digits.py` | BONUS! popup Riches amounts in ASCII digits (name-input step 25, **§24.8**) |
 | `src/patch_profile_caret.py` | Profile name caret sits after the centered text: `center + 3.5 × (cells + 2)` (name-input step 26, **§17.10**) |
 | `src/patch_present_card.py` | Date present picker: header 「持っていくプレゼントを選んでください」 (code.bin UTF-8 @ `0x68be8`) → "Choose a present to bring"; card purchase line `"%d%s%d%s %s"` @ `0x68980` (month 月 day 日 購入, "11Month21 Day(s) Bought") → `"%s %d/%d"` with the args @ `0x6889c` reordered: "Bought 11/21". In place, shared 月/日 untouched (name-input step 27) |
+| `tools/deploy_date_day_glyph_en.py` | pkg **4138** date-info clock tile `dat_info_clo_txt_day` 日 → lowercase **d** (8×8 RGBA8, own zlib slot; master from `work/render_date_day_glyph.py`). The clock is never drawn (rig probe 2026-11-19: red digits + red D invisible on the home screen and a whole Call Out date); swapped so the package carries no Japanese ("19d 23:45") |
 | `tools/translate_heroines_gemini.py fix-pronoun` / `fix-address` | Redo Gemini lines that kept `●` or name the heroine where English says "you" (**§24.3–24.4**) |
 | `tools/deploy_msel_options_en.py` | Options + clock-title A8 → exact zlib pkg **5245** (splice into **live** MOD) |
 | `tools/deploy_optionpassword_en.py` | Password window `パスワード` → `Password` ETC1A4 `Pass_Win01` @ **5251** |
