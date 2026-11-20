@@ -315,8 +315,8 @@
     },
     {
       "path": "Title.check/timg/Eng_Patch.png",
-      "blob": "bedc4919853be595895326f10295284aafac635e",
-      "commit": "d368827",
+      "blob": "699c4655b7a29fe6ae053bdfe73ebee104c11e25",
+      "commit": "2eaa7305",
       "reason": "EngPatch badge (ours, not Zhoumaru): version + site URL."
     },
     {
